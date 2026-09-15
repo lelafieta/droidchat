@@ -1,6 +1,7 @@
 package com.futurist.droidchat.ui.feature.signup
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,9 +49,9 @@ fun SignUpRoute(
         SignUpViewModel(SignUpFormValidator())
     },
 ) {
-    val formState = viewModel.state.collectAsState()
+    val formState = viewModel.formState
     SignUpScreen(
-        formState = formState.value,
+        formState = formState,
         onFormEvent = viewModel::onFormEvent
     )
 }
@@ -189,7 +190,6 @@ fun SignUpScreen(
                         }.invokeOnCompletion {
                             if (!sheetState.isVisible) {
                                 onFormEvent(SignUpFormEvent.CloseProfilePictureOptionsModalBottomSheet)
-
                             }
                         }
                     },

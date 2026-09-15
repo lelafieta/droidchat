@@ -1,6 +1,9 @@
 package com.futurist.droidchat.ui.feature.signup
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.futurist.droidchat.R
 import com.futurist.droidchat.ui.validator.FormValidator
@@ -11,59 +14,46 @@ import kotlinx.coroutines.flow.update
 class SignUpViewModel(
     private val formValidator: FormValidator<SignUpFormState>
 ) : ViewModel() {
-    private val _state = MutableStateFlow(SignUpFormState())
-    val state = _state.asStateFlow()
+    var formState by mutableStateOf(SignUpFormState())
+        private set
+
 
     fun onFormEvent(event: SignUpFormEvent) {
 
         when (event) {
             is SignUpFormEvent.ProfilePhotoUriChanged -> {
-                _state.update {
-                    it.copy(profilePictureUri = event.uri)
-                }
+                formState = formState.copy(profilePictureUri = event.uri)
             }
 
             is SignUpFormEvent.FirstNameChanged -> {
-                _state.update {
-                    it.copy(firstName = event.firstName)
-                }
+                formState = formState.copy(firstName = event.firstName)
             }
 
             is SignUpFormEvent.LastNameChanged -> {
-                _state.update {
-                    it.copy(lastName = event.lastName)
-                }
+                formState = formState.copy(lastName = event.lastName)
             }
 
             is SignUpFormEvent.EmailChanged -> {
-                _state.update {
-                    it.copy(email = event.email)
-                }
+                formState = formState.copy(email = event.email)
             }
 
             is SignUpFormEvent.PasswordChanged -> {
-                _state.update {
-                    it.copy(password = event.password)
-                }
+                formState = formState.copy(password = event.password)
                 updatePasswordExtraText()
             }
 
             is SignUpFormEvent.PasswordConfirmationChanged -> {
-                _state.update {
-                    it.copy(passwordConfirmation = event.passwordConfirmation)
-                }
+                formState = formState.copy(passwordConfirmation = event.passwordConfirmation)
                 updatePasswordExtraText()
             }
 
             SignUpFormEvent.OpenProfilePictureOptionsModalBottomSheet -> {
-                _state.update {
-                    it.copy(isProfilePictureModalBottomSheetOpen = true)
-                }
+                formState = formState.copy(isProfilePictureModalBottomSheetOpen = true)
             }
 
             SignUpFormEvent.CloseProfilePictureOptionsModalBottomSheet -> {
-                _state.update {
-                    it.copy(isProfilePictureModalBottomSheetOpen = false)
+                formState = formState.copy(isProfilePictureModalBottomSheetOpen = false).also {
+                    formValidator.validate(it)
                 }
             }
 
@@ -76,29 +66,22 @@ class SignUpViewModel(
     }
 
     private fun updatePasswordExtraText() {
-        _state.update {
-            it.copy(
-                passwordExtraText = if (it.password == it.passwordConfirmation) {
-                    R.string.feature_sign_up_passwords_match
-                } else null
-            )
-        }
+        formState = formState.copy(
+            passwordExtraText = if (formState.password.isNotEmpty() && formState.password != formState.passwordConfirmation) {
+                R.string.error_message_password_confirmation_invalid
+            } else null
+        )
     }
 
     private fun doSignUp() {
-        Log.d("doSignUp", "doSignUp: ")
         if (isValidForm()) {
-            _state.update {
-                it.copy(isLoading = true)
-            }
+            formState = formState.copy(isLoading = true)
         }
     }
 
     private fun isValidForm(): Boolean {
-        return !formValidator.validate(_state.value).also {
-            _state.update {
-                it
-            }
+        return !formValidator.validate(formState).also {
+            formState = it
         }.hasError;
     }
 
