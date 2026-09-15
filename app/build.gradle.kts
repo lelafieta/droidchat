@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlinKsp)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -36,6 +37,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
     buildFeatures {
         compose = true
@@ -58,6 +60,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.hilt.android)
+    implementation(libs.androidx.compose.ui.graphics)
     ksp(libs.hilt.compiler)
 
     implementation(libs.androidx.navigation.compose)
