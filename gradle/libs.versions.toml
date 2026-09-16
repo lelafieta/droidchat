@@ -80,3 +80,4 @@ jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "k
 kotlinKsp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
+hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }

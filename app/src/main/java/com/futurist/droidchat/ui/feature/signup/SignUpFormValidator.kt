@@ -4,8 +4,9 @@ import com.futurist.droidchat.ui.validator.EmailValidator
 import com.futurist.droidchat.ui.validator.FormValidator
 import com.futurist.droidchat.ui.validator.PasswordValidator
 import com.futurist.droidchat.R
+import javax.inject.Inject
 
-class SignUpFormValidator : FormValidator<SignUpFormState> {
+class SignUpFormValidator @Inject constructor() : FormValidator<SignUpFormState> {
     override fun validate(formState: SignUpFormState): SignUpFormState {
         val isFirstNameValid = formState.firstName.isNotEmpty()
         val isLastNameValid = formState.lastName.isNotEmpty()
