@@ -115,7 +115,8 @@ fun SignUpScreen(
                             onFormEvent(
                                 SignUpFormEvent.OpenProfilePictureOptionsModalBottomSheet
                             )
-                        })
+                        }, isCompressingImage = formState.isCompressingImage
+                    )
                     Spacer(modifier = Modifier.height(30.dp))
                     SecundaryTextField(
                         label = stringResource(R.string.feature_sign_up_first_name),
