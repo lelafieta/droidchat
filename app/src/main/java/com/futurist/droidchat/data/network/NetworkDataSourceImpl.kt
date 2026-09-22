@@ -10,7 +10,7 @@ import io.ktor.client.request.setBody
 import javax.inject.Inject
 
 
-class NetwordDataSourceImpl @Inject constructor(
+class NetworkDataSourceImpl @Inject constructor(
     private val httpClient: HttpClient
 ): NetworkDataSource {
     override suspend fun signUp(request: CreateAccountRequest) {

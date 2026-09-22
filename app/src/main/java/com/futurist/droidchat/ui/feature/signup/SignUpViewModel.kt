@@ -9,8 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.futurist.droidchat.R
 import com.futurist.droidchat.data.repository.AuthRepository
 import com.futurist.droidchat.model.CreateAccount
+import com.futurist.droidchat.model.NetworkException
 import com.futurist.droidchat.ui.validator.FormValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.ktor.client.plugins.ClientRequestException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -99,6 +101,11 @@ class SignUpViewModel @Inject constructor(
                     )
                 } catch (e : Exception) {
                     e.printStackTrace()
+                    if (e is NetworkException.ApiException) {
+                        Log.d("TAG", "doSignUp: ${e.responseMessage}")
+                    } else{
+
+                    }
                 }
             }
         }

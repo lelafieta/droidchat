@@ -1,7 +1,8 @@
 package com.futurist.droidchat.data.network.di
 
-import com.futurist.droidchat.data.network.NetwordDataSourceImpl
+
 import com.futurist.droidchat.data.network.NetworkDataSource
+import com.futurist.droidchat.data.network.NetworkDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,5 +15,5 @@ interface NetworkDataSourceModule {
 
     @Binds
     @Singleton
-    fun bindNetworkDataSource(networkDataSource: NetwordDataSourceImpl) : NetworkDataSource
+    fun bindNetworkDataSource(networkDataSource: NetworkDataSourceImpl) : NetworkDataSource
 }
