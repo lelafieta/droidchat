@@ -89,24 +89,36 @@ class SignUpViewModel @Inject constructor(
             formState = formState.copy(isLoading = true)
 
             viewModelScope.launch {
-                try {
-                    authRepository.signUp(
-                        createAccount = CreateAccount(
-                            firstName = formState.firstName,
-                            lastName = formState.lastName,
-                            password = formState.password,
-                            username = formState.email,
-                            profilePictureId = null
-                        )
+                authRepository.signUp(
+                    createAccount = CreateAccount(
+                        firstName = formState.firstName,
+                        lastName = formState.lastName,
+                        password = formState.password,
+                        username = formState.email,
+                        profilePictureId = null
                     )
-                } catch (e : Exception) {
-                    e.printStackTrace()
-                    if (e is NetworkException.ApiException) {
-                        Log.d("TAG", "doSignUp: ${e.responseMessage}")
-                    } else{
-
+                ).fold(
+                    onSuccess = {
+                        formState = formState.copy(
+                            isLoading = false,
+                            isSignedUp = true
+                        )
+                    },
+                    onFailure = {
+                        formState = formState.copy(
+                            isLoading = false,
+                            apiErrorMessageResId = if (it is NetworkException.ApiException) {
+                                when (it.statusCode) {
+                                    400 -> R.string.error_message_api_form_validation_failed
+                                    409 -> R.string.error_message_user_with_username_already_exists
+                                    else -> R.string.common_generic_error_title
+                                }
+                            } else {
+                                R.string.common_generic_error_title
+                            }
+                        )
                     }
-                }
+                )
             }
         }
     }
@@ -115,6 +127,10 @@ class SignUpViewModel @Inject constructor(
         return !formValidator.validate(formState).also {
             formState = it
         }.hasError;
+    }
+
+    fun errorMessageShow(){
+        formState = formState.copy(apiErrorMessageResId = null)
     }
 
 }

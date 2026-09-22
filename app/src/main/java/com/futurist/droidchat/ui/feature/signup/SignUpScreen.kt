@@ -14,9 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -49,17 +52,37 @@ fun SignUpRoute(
     viewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val formState = viewModel.formState
+
+
     SignUpScreen(
-        formState = formState,
-        onFormEvent = viewModel::onFormEvent
+        formState = formState, onFormEvent = viewModel::onFormEvent
     )
+
+    formState.apiErrorMessageResId?.let { resId ->
+        AlertDialog(
+            onDismissRequest = viewModel::errorMessageShow,
+            confirmButton = {
+                Button(
+                    onClick = viewModel::errorMessageShow
+                ) {
+                    Text(stringResource(R.string.common_ok))
+                }
+            },
+            title = {
+                Text(stringResource(R.string.common_generic_error_title))
+            },
+            text = {
+                Text(stringResource(resId), color = MaterialTheme.colorScheme.onSurface)
+            },
+        )
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    formState: SignUpFormState,
-    onFormEvent: (SignUpFormEvent) -> Unit = {}
+    formState: SignUpFormState, onFormEvent: (SignUpFormEvent) -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -67,41 +90,32 @@ fun SignUpScreen(
             .verticalScroll(state = rememberScrollState()),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(56.dp))
 
             Image(
-                painter = painterResource(R.drawable.logo),
-                contentDescription = null
+                painter = painterResource(R.drawable.logo), contentDescription = null
             )
             Spacer(modifier = Modifier.height(16.dp))
             Surface(
-                modifier = Modifier
-                    .fillMaxSize(),
-                shape = MaterialTheme.shapes.extraLarge.copy(
+                modifier = Modifier.fillMaxSize(), shape = MaterialTheme.shapes.extraLarge.copy(
                     bottomStart = CornerSize(0.dp),
                     bottomEnd = CornerSize(0.dp),
-                ),
-                color = MaterialTheme.colorScheme.surface
+                ), color = MaterialTheme.colorScheme.surface
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(16.dp),
+                    modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
                     ProfilePictureSelector(
-                        imageUri = formState.profilePictureUri,
-                        modifier = Modifier
-                            .clickable {
-                                onFormEvent(
-                                    SignUpFormEvent.OpenProfilePictureOptionsModalBottomSheet
-                                )
-                            }
-                    )
+                        imageUri = formState.profilePictureUri, modifier = Modifier.clickable {
+                            onFormEvent(
+                                SignUpFormEvent.OpenProfilePictureOptionsModalBottomSheet
+                            )
+                        })
                     Spacer(modifier = Modifier.height(30.dp))
                     SecundaryTextField(
                         label = stringResource(R.string.feature_sign_up_first_name),
@@ -111,11 +125,9 @@ fun SignUpScreen(
                         },
                         errorText = formState.firstNameError?.let {
                             stringResource(
-                                id = it,
-                                stringResource(R.string.feature_sign_up_first_name)
+                                id = it, stringResource(R.string.feature_sign_up_first_name)
                             )
-                        }
-                    )
+                        })
                     Spacer(modifier = Modifier.height(22.dp))
                     SecundaryTextField(
                         label = stringResource(R.string.feature_sign_up_last_name),
@@ -125,11 +137,14 @@ fun SignUpScreen(
                                 SignUpFormEvent.LastNameChanged(
                                     it,
 
-                                )
+                                    )
                             )
                         },
-                        errorText = formState.lastNameError?.let { stringResource(id = it, stringResource(R.string.feature_sign_up_last_name)) }
-                    )
+                        errorText = formState.lastNameError?.let {
+                            stringResource(
+                                id = it, stringResource(R.string.feature_sign_up_last_name)
+                            )
+                        })
                     Spacer(modifier = Modifier.height(22.dp))
 
                     SecundaryTextField(
@@ -139,8 +154,7 @@ fun SignUpScreen(
                             onFormEvent(SignUpFormEvent.EmailChanged(it))
                         },
                         keyboardType = KeyboardType.Email,
-                        errorText = formState.emailError?.let { stringResource(id = it) }
-                    )
+                        errorText = formState.emailError?.let { stringResource(id = it) })
                     Spacer(modifier = Modifier.height(22.dp))
 
 
@@ -154,8 +168,7 @@ fun SignUpScreen(
                         keyboardType = KeyboardType.Password,
                         extraText = formState.passwordExtraText?.let { stringResource(id = it) },
                         imeAction = ImeAction.Next,
-                        errorText = formState.passwordError?.let { stringResource(id = it) }
-                    )
+                        errorText = formState.passwordError?.let { stringResource(id = it) })
                     Spacer(modifier = Modifier.height(22.dp))
                     SecundaryTextField(
                         label = stringResource(R.string.feature_sign_up_password_confirmation),
@@ -165,14 +178,12 @@ fun SignUpScreen(
                         },
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done,
-                        extraText = formState.passwordExtraText?.let { stringResource(id = it) }
-                    )
+                        extraText = formState.passwordExtraText?.let { stringResource(id = it) })
                     Spacer(modifier = Modifier.height(22.dp))
                     PrimaryButton(
-                        text = stringResource(R.string.feature_sign_up_button),
-                        onClick = {
+                        text = stringResource(R.string.feature_sign_up_button), onClick = {
                             onFormEvent(SignUpFormEvent.Submit)
-                        }
+                        }, isLoading = formState.isLoading
                     )
                 }
             }
@@ -191,11 +202,9 @@ fun SignUpScreen(
                                 onFormEvent(SignUpFormEvent.CloseProfilePictureOptionsModalBottomSheet)
                             }
                         }
-                    },
-                    onDismissRequest = {
+                    }, onDismissRequest = {
                         onFormEvent(SignUpFormEvent.CloseProfilePictureOptionsModalBottomSheet)
-                    },
-                    sheetState = sheetState
+                    }, sheetState = sheetState
                 )
             }
         }
@@ -207,8 +216,6 @@ fun SignUpScreen(
 private fun SignUpScreenPreview() {
     DroidChatTheme {
         SignUpScreen(
-            formState = SignUpFormState(),
-            onFormEvent = {}
-        )
+            formState = SignUpFormState(), onFormEvent = {})
     }
 }

@@ -5,7 +5,7 @@ import com.futurist.droidchat.model.CreateAccount
 
 
 interface AuthRepository {
-    suspend fun signUp(createAccount: CreateAccount)
+    suspend fun signUp(createAccount: CreateAccount): Result<Unit>
 
     suspend fun signIn(username: String, password: String)
 
