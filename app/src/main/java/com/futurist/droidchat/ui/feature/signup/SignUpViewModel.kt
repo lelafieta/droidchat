@@ -110,13 +110,33 @@ class SignUpViewModel @Inject constructor(
             formState = formState.copy(isLoading = true)
 
             viewModelScope.launch {
+
+                var profilePictureId: Int? = null
+                var errorWhenUploadingProfilePicture = false
+
+
+                formState.profilePictureUri?.path?.let { path->
+                    authRepository.uploadProfilePicture(path).fold(
+                        onSuccess = {image->
+                            profilePictureId = image.id
+                        },
+                        onFailure = {
+                            errorWhenUploadingProfilePicture = true
+                        }
+                    )
+                }
+
+                if (errorWhenUploadingProfilePicture){
+                    return@launch
+                }
+
                 authRepository.signUp(
                     createAccount = CreateAccount(
                         firstName = formState.firstName,
                         lastName = formState.lastName,
                         password = formState.password,
                         username = formState.email,
-                        profilePictureId = null
+                        profilePictureId = profilePictureId
                     )
                 ).fold(
                     onSuccess = {

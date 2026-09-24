@@ -58,6 +58,10 @@ fun SignUpRoute(
         formState = formState, onFormEvent = viewModel::onFormEvent
     )
 
+    if (formState.isSignedUp){
+
+    }
+
     formState.apiErrorMessageResId?.let { resId ->
         AlertDialog(
             onDismissRequest = viewModel::errorMessageShow,
