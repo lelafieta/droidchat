@@ -147,7 +147,6 @@ class SignUpViewModel @Inject constructor(
                         )
                     },
                     onFailure = {
-                        Log.d("SignUpViewModel", "Error when signing up: ${it.message}")
                         formState = formState.copy(
                             isLoading = false,
                             apiErrorMessageResId = if (it is NetworkException.ApiException) {
