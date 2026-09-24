@@ -25,7 +25,7 @@ class AuthRepositoryImpl @Inject constructor(
                         password = createAccount.password,
                         firstName = createAccount.firstName,
                         lastName = createAccount.lastName,
-                        profilePicture = createAccount.profilePictureId
+                        profilePictureId = createAccount.profilePictureId
                     )
                 )
             }

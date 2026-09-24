@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.futurist.droidchat.R
+import com.futurist.droidchat.ui.components.AppDialog
 import com.futurist.droidchat.ui.components.PrimaryButton
 import com.futurist.droidchat.ui.components.ProfilePictureOptionsModalBottomSheet
 import com.futurist.droidchat.ui.components.ProfilePictureSelector
@@ -50,6 +51,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignUpRoute(
     viewModel: SignUpViewModel = hiltViewModel(),
+    onSignUpSuccess: () -> Unit,
 ) {
     val formState = viewModel.formState
 
@@ -58,26 +60,26 @@ fun SignUpRoute(
         formState = formState, onFormEvent = viewModel::onFormEvent
     )
 
-    if (formState.isSignedUp){
-
+    if (formState.isSignedUp) {
+        AppDialog(
+            onDismissRequest = {
+                viewModel.errorMessageShow()
+                onSignUpSuccess()
+            },
+            onConfirmButtonClick = {
+                viewModel.errorMessageShow()
+                onSignUpSuccess()
+            },
+            message = stringResource(R.string.feature_sign_up_success),
+        )
     }
 
     formState.apiErrorMessageResId?.let { resId ->
-        AlertDialog(
+        AppDialog(
             onDismissRequest = viewModel::errorMessageShow,
-            confirmButton = {
-                Button(
-                    onClick = viewModel::errorMessageShow
-                ) {
-                    Text(stringResource(R.string.common_ok))
-                }
-            },
-            title = {
-                Text(stringResource(R.string.common_generic_error_title))
-            },
-            text = {
-                Text(stringResource(resId), color = MaterialTheme.colorScheme.onSurface)
-            },
+            onConfirmButtonClick = viewModel::errorMessageShow,
+            message = stringResource(resId),
+            title = stringResource(R.string.common_generic_error_title)
         )
     }
 
@@ -141,8 +143,7 @@ fun SignUpScreen(
                             onFormEvent(
                                 SignUpFormEvent.LastNameChanged(
                                     it,
-
-                                    )
+                                )
                             )
                         },
                         errorText = formState.lastNameError?.let {
@@ -199,17 +200,17 @@ fun SignUpScreen(
             if (formState.isProfilePictureModalBottomSheetOpen) {
                 ProfilePictureOptionsModalBottomSheet(
                     onPeatureSelected = {
-                        onFormEvent(SignUpFormEvent.ProfilePhotoUriChanged(it))
-                        scope.launch {
-                            sheetState.hide()
-                        }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                onFormEvent(SignUpFormEvent.CloseProfilePictureOptionsModalBottomSheet)
-                            }
+                    onFormEvent(SignUpFormEvent.ProfilePhotoUriChanged(it))
+                    scope.launch {
+                        sheetState.hide()
+                    }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            onFormEvent(SignUpFormEvent.CloseProfilePictureOptionsModalBottomSheet)
                         }
-                    }, onDismissRequest = {
-                        onFormEvent(SignUpFormEvent.CloseProfilePictureOptionsModalBottomSheet)
-                    }, sheetState = sheetState
+                    }
+                }, onDismissRequest = {
+                    onFormEvent(SignUpFormEvent.CloseProfilePictureOptionsModalBottomSheet)
+                }, sheetState = sheetState
                 )
             }
         }

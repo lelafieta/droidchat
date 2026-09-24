@@ -2,6 +2,7 @@ package com.futurist.droidchat.ui.feature.signup
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -146,16 +147,17 @@ class SignUpViewModel @Inject constructor(
                         )
                     },
                     onFailure = {
+                        Log.d("SignUpViewModel", "Error when signing up: ${it.message}")
                         formState = formState.copy(
                             isLoading = false,
                             apiErrorMessageResId = if (it is NetworkException.ApiException) {
                                 when (it.statusCode) {
                                     400 -> R.string.error_message_api_form_validation_failed
                                     409 -> R.string.error_message_user_with_username_already_exists
-                                    else -> R.string.common_generic_error_title
+                                    else -> R.string.common_generic_error_message
                                 }
                             } else {
-                                R.string.common_generic_error_title
+                                R.string.common_generic_error_message
                             }
                         )
                     }
@@ -168,6 +170,10 @@ class SignUpViewModel @Inject constructor(
         return !formValidator.validate(formState).also {
             formState = it
         }.hasError;
+    }
+
+    fun successMessageShow(){
+        formState = formState.copy(isSignedUp = false)
     }
 
     fun errorMessageShow(){
