@@ -1,6 +1,7 @@
 package com.futurist.droidchat.ui.feature.signin
 
 import android.R.attr.end
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,25 +38,63 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.futurist.droidchat.R
+import com.futurist.droidchat.ui.components.AppDialog
 import com.futurist.droidchat.ui.components.PrimaryButton
 import com.futurist.droidchat.ui.components.PrimaryTextField
 import com.futurist.droidchat.ui.theme.BackgroundGradient
 import com.futurist.droidchat.ui.theme.DroidChatTheme
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SignInRoute(
     viewModel: SignInViewModel = hiltViewModel(),
-    navigateToSignUp:  ()-> Unit
+    navigateToSignUp:  ()-> Unit,
+    navigateToMain:  ()-> Unit,
+    context: Context = LocalContext.current
 ) {
     val formState = viewModel.formState
+    val genericErrorMessage = stringResource(R.string.common_generic_error_message)
+    var showUnautorizedError by remember { mutableStateOf(false) }
+
+    LaunchedEffect(true) {
+        viewModel.signInActionFlow.collect {
+            viewModel.signInActionFlow.collectLatest { action -> when(action){
+                SignInViewModel.SignInAction.Success -> {
+                    navigateToMain()
+                }
+                is SignInViewModel.SignInAction.Error -> {
+                        when(action) {
+                            SignInViewModel.SignInAction.Error.GenericError -> {
+                                Toast.makeText(context,
+                                    genericErrorMessage,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            SignInViewModel.SignInAction.Error.UnauthorizedError -> {
+                                showUnautorizedError = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     SignInScreen(
         formState = formState,
         onFormEvent = viewModel::onFormEvent,
         onRegisterClick = navigateToSignUp
     )
 
+    if (showUnautorizedError) {
+        AppDialog(
+            title = stringResource(R.string.common_generic_error_title),
+            message = stringResource(R.string.error_message_invalid_username_or_password),
+            onDismissRequest = { showUnautorizedError = false },
+            onConfirmButtonClick = { showUnautorizedError = false }
+
+        )
+    }
 }
 
 @Composable

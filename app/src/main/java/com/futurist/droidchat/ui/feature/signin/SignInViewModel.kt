@@ -7,7 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.futurist.droidchat.R
 import com.futurist.droidchat.data.repository.AuthRepository
+import com.futurist.droidchat.model.NetworkException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +21,9 @@ class SignInViewModel @Inject constructor(
 
     var formState by mutableStateOf(SignInFormState())
         private set
+
+    private val _signInActionFlow = MutableSharedFlow<SignInAction>()
+    val signInActionFlow = _signInActionFlow.asSharedFlow()
 
 
     fun onFormEvent(event: SignInFormEvent) {
@@ -51,26 +57,35 @@ class SignInViewModel @Inject constructor(
 
         if (isFormValid) {
             formState = formState.copy(isLoading = true)
-
             viewModelScope.launch {
                 authRepository.signIn(
                     username = formState.email, password = formState.password
                 ).fold(
                     onSuccess = {
                         formState = formState.copy(isLoading = false)
+                        _signInActionFlow.emit(SignInAction.Success)
                     },
                     onFailure = {
                         formState = formState.copy(isLoading = false)
+
+                        val error = if ( it is NetworkException.ApiException && it.statusCode == 401) {
+                            SignInAction.Error.UnauthorizedError
+                        }else {
+                            SignInAction.Error.GenericError
+                        }
+
+                        _signInActionFlow.emit(error)
                     }
                 )
             }
         }
     }
 
-    private fun resetFormErrorState() {
-        formState = formState.copy(
-            emailError = null,
-            passwordError = null
-        )
+    sealed interface SignInAction {
+        data object Success : SignInAction
+        sealed interface Error : SignInAction {
+            data object GenericError : Error
+            data object UnauthorizedError : Error
+        }
     }
 }

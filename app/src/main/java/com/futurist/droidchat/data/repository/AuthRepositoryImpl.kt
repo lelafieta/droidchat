@@ -1,6 +1,7 @@
 package com.futurist.droidchat.data.repository
 
 import com.futurist.droidchat.data.di.IoDispatcher
+import com.futurist.droidchat.data.manager.TokenManager
 import com.futurist.droidchat.data.network.NetworkDataSource
 import com.futurist.droidchat.data.network.model.AuthRequest
 import com.futurist.droidchat.data.network.model.CreateAccountRequest
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val networkDataSource: NetworkDataSource,
+    private val tokenManager: TokenManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AuthRepository {
     override suspend fun signUp(createAccount: CreateAccount): Result<Unit> {
@@ -41,6 +43,8 @@ class AuthRepositoryImpl @Inject constructor(
                             password = password
                         )
                     )
+
+                tokenManager.saveAccessToken(tokenTesponse.token)
             }
         }
     }
