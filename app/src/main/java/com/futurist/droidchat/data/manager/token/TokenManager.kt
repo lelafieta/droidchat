@@ -1,4 +1,4 @@
-package com.futurist.droidchat.data.manager
+package com.futurist.droidchat.data.manager.token
 
 import kotlinx.coroutines.flow.Flow
 

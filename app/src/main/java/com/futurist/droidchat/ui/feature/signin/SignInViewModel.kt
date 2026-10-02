@@ -1,5 +1,6 @@
 package com.futurist.droidchat.ui.feature.signin
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -73,6 +74,8 @@ class SignInViewModel @Inject constructor(
                         }else {
                             SignInAction.Error.GenericError
                         }
+
+                        Log.d("SignInViewModel", "doSignIn: error: $error")
 
                         _signInActionFlow.emit(error)
                     }

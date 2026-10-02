@@ -1,4 +1,4 @@
-package com.futurist.droidchat.data.manager
+package com.futurist.droidchat.data.manager.token
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit

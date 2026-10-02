@@ -2,6 +2,7 @@ package com.futurist.droidchat.ui.feature.signin
 
 import android.R.attr.end
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -58,26 +59,26 @@ fun SignInRoute(
     var showUnautorizedError by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
-        viewModel.signInActionFlow.collect {
-            viewModel.signInActionFlow.collectLatest { action -> when(action){
-                SignInViewModel.SignInAction.Success -> {
-                    navigateToMain()
-                }
-                is SignInViewModel.SignInAction.Error -> {
-                        when(action) {
-                            SignInViewModel.SignInAction.Error.GenericError -> {
-                                Toast.makeText(context,
-                                    genericErrorMessage,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                            SignInViewModel.SignInAction.Error.UnauthorizedError -> {
-                                showUnautorizedError = true
-                            }
-                        }
+        viewModel.signInActionFlow.collectLatest { action -> when(action){
+            SignInViewModel.SignInAction.Success -> {
+                navigateToMain()
+            }
+            is SignInViewModel.SignInAction.Error -> {
+                when(action) {
+                    is SignInViewModel.SignInAction.Error.GenericError -> {
+                        Log.d("SignInRoute", "GenericError: ${action}")
+                        Toast.makeText(context,
+                            genericErrorMessage,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is SignInViewModel.SignInAction.Error.UnauthorizedError -> {
+                        Log.d("SignInRoute", "UnauthorizedError: ${action}")
+                        showUnautorizedError = true
                     }
                 }
             }
+        }
         }
     }
     SignInScreen(
@@ -85,7 +86,7 @@ fun SignInRoute(
         onFormEvent = viewModel::onFormEvent,
         onRegisterClick = navigateToSignUp
     )
-
+    Log.d("SignInRoute", "showUnautorizedError: $showUnautorizedError")
     if (showUnautorizedError) {
         AppDialog(
             title = stringResource(R.string.common_generic_error_title),

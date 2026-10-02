@@ -2,6 +2,7 @@ package com.futurist.droidchat.navigation
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -40,12 +41,10 @@ fun ChatNavHost(modifier: Modifier = Modifier) {
     NavHost(navController = navController, startDestination = Route.SplashRoute){
 
         composable<Route.SplashRoute>(
-
         ) {
             SplashRoute(
                 onNavigateToSignIn = {
                     navController.navigate(
-
                         route = Route.SignInRoute,
                         navOptions = navOptions {
                             popUpTo(Route.SplashRoute) {
@@ -55,6 +54,7 @@ fun ChatNavHost(modifier: Modifier = Modifier) {
                     )
                 },
                 onNavigateToMain = {
+                    Log.d("Navigation", "Navigate to main")
                     Toast.makeText(
                         navController.context,
                         "Navigate to main",
