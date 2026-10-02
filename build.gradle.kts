@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.kotlinKsp) apply false
     alias(libs.plugins.hiltAndroid) apply false
+    alias(libs.plugins.protoBuf) apply false
 }

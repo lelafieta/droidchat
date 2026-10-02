@@ -1,5 +1,7 @@
 package com.futurist.droidchat.navigation
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -28,10 +30,12 @@ sealed interface Route{
     object SignUpRoute
 }
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun ChatNavHost(modifier: Modifier = Modifier) {
 
     val navController = rememberNavController()
+    val activity = LocalContext.current as? Activity
 
     NavHost(navController = navController, startDestination = Route.SplashRoute){
 
@@ -49,6 +53,16 @@ fun ChatNavHost(modifier: Modifier = Modifier) {
                             }
                         }
                     )
+                },
+                onNavigateToMain = {
+                    Toast.makeText(
+                        navController.context,
+                        "Navigate to main",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                onCloseApp = {
+                    activity?.finish()
                 }
             )
         }

@@ -1,7 +1,7 @@
 package com.futurist.droidchat.data.manager.di
 
+import com.futurist.droidchat.data.manager.SecureTokenManagerImpl
 import com.futurist.droidchat.data.manager.TokenManager
-import com.futurist.droidchat.data.manager.TokenManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ interface ManagerModule {
     @Binds
     @Singleton
     abstract fun bindTokenManager(
-        tokenManagerImpl: TokenManagerImpl
+        tokenManagerImpl: SecureTokenManagerImpl
     ): TokenManager
 
 }

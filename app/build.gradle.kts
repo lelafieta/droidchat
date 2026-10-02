@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hiltAndroid)
+    alias(libs.plugins.protoBuf)
 }
 
 android {
@@ -77,8 +78,6 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
-    implementation(libs.exifinterface)
-
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
 
@@ -93,6 +92,8 @@ dependencies {
     implementation(libs.ktor.client.auth)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.logging)
+    implementation(libs.exifinterface)
+    implementation(libs.security.crypto)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -101,4 +102,19 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:3.24.4" }
+
+    generateProtoTasks {
+        all().configureEach {
+            builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+
+        }
+    }
 }

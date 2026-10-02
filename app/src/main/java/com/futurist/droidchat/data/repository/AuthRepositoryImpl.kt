@@ -9,6 +9,8 @@ import com.futurist.droidchat.model.CreateAccount
 import com.futurist.droidchat.model.Image
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import okhttp3.Dispatcher
 import javax.inject.Inject
@@ -18,6 +20,17 @@ class AuthRepositoryImpl @Inject constructor(
     private val tokenManager: TokenManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AuthRepository {
+
+    override suspend fun getAccessToken(): String? {
+        return tokenManager.accessToken.firstOrNull()
+    }
+
+    override suspend fun clearAccessToken() {
+        withContext(ioDispatcher) {
+            tokenManager.clearAccessToken()
+        }
+    }
+
     override suspend fun signUp(createAccount: CreateAccount): Result<Unit> {
         return withContext(ioDispatcher) {
             runCatching {
@@ -59,6 +72,16 @@ class AuthRepositoryImpl @Inject constructor(
                     type = imageResponse.type,
                     url = imageResponse.url
                 )
+            }
+        }
+    }
+
+    override suspend fun authenticate(token: String): Result<Unit> {
+        return withContext(ioDispatcher){
+            runCatching {
+                val useResponse = networkDataSource.authenticate(token)
+
+                // Salva o usuário no DataStore
             }
         }
     }

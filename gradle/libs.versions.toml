@@ -75,6 +75,7 @@ protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieComposeVersion" }
 exifinterface = { module = "androidx.exifinterface:exifinterface", version.ref = "exifinterface" }
+security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -83,3 +84,4 @@ kotlinKsp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
+protoBuf = { id = "com.google.protobuf", version.ref = "protoBuf" }

@@ -47,7 +47,7 @@ object ApiModule {
             }
 
             defaultRequest {
-                url("https://chat-api.androidmoderno.com.br")
+                url("https://chat-api.androidmoderno.com.br/")
                 contentType(ContentType.Application.Json)
             }
 
